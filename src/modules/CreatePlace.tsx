@@ -67,6 +67,22 @@ const CreatePlace = () => {
     }
   };
 
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setPlace({ ...place, lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error('Error getting current location:', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.leftSide}>
@@ -81,6 +97,21 @@ const CreatePlace = () => {
         >
           <h2>Create New Place</h2>
           <div style={styles.Buttons}>
+            <div>
+              <button
+                onClick={getCurrentLocation}
+                style={{
+                  backgroundColor: '#4CAF50',
+                  color: '#fff',
+                  padding: '10px',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                Set Current Location
+              </button>
+            </div>
             <div>
               <button
                 onClick={() => navigate('/')}
