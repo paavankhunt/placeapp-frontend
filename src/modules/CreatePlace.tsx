@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import axios from 'axios';
 import { getToken } from '../helpers';
 import Logout from '../components/Logout';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   GoogleMap,
   InfoWindow,
@@ -11,6 +11,7 @@ import {
 } from '@react-google-maps/api';
 
 const CreatePlace = () => {
+  const navigate = useNavigate();
   const [place, setPlace] = useState({
     name: '',
     description: '',
@@ -67,72 +68,96 @@ const CreatePlace = () => {
   };
 
   return (
-    <div>
-      <Logout />
-      <h2>Create New Place</h2>
-      <Link to="/">Dashboard</Link>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <label>
-          Name:
-          <input
-            type="text"
-            value={place.name}
-            onChange={(e) => setPlace({ ...place, name: e.target.value })}
-          />
-        </label>
-        <label>
-          Description:
-          <textarea
-            value={place.description}
-            onChange={(e) =>
-              setPlace({ ...place, description: e.target.value })
-            }
-          />
-        </label>
-        <label>
-          Location:
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <input
-              type="text"
-              placeholder="Latitude"
-              value={place.lat}
-              onChange={(e) =>
-                setPlace({ ...place, lat: Number(e.target.value) })
-              }
-            />
-            <input
-              type="text"
-              placeholder="Longitude"
-              value={place.lng}
-              onChange={(e) =>
-                setPlace({ ...place, lng: Number(e.target.value) })
-              }
-            />
+    <div style={styles.container}>
+      <div style={styles.leftSide}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
+          <h2>Create New Place</h2>
+          <div style={styles.Buttons}>
+            <div>
+              <button
+                onClick={() => navigate('/')}
+                style={{
+                  backgroundColor: 'blue',
+                  textDecoration: 'none',
+                  color: '#fff',
+                  padding: '10px',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                Dashboard
+              </button>
+            </div>
+            <div>
+              <Logout />
+            </div>
           </div>
-        </label>
+        </div>
+        <div>
+          <div style={{ ...styles.formContainer, flexDirection: 'column' }}>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Name:</label>
+              <input
+                type="text"
+                value={place.name}
+                onChange={(e) => setPlace({ ...place, name: e.target.value })}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Description:</label>
+              <textarea
+                value={place.description}
+                onChange={(e) =>
+                  setPlace({ ...place, description: e.target.value })
+                }
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Latitude:</label>
+              <input
+                type="text"
+                placeholder="Enter Latitude"
+                value={place.lat}
+                onChange={(e) =>
+                  setPlace({ ...place, lat: Number(e.target.value) })
+                }
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Longitude:</label>
+              <input
+                type="text"
+                placeholder="Enter Longitude"
+                value={place.lng}
+                onChange={(e) =>
+                  setPlace({ ...place, lng: Number(e.target.value) })
+                }
+              />
+            </div>
+          </div>
+          <button onClick={handleCreatePlace} style={styles.createButton}>
+            Create Place
+          </button>
+        </div>
       </div>
-      <button onClick={handleCreatePlace} style={{ marginTop: '1rem' }}>
-        Create Place
-      </button>
-      <div>
+      <div style={styles.rightSide}>
         {!isLoaded ? (
-          <button>'Loading...'</button>
+          <button>Loading...</button>
         ) : (
-          <div
-            style={{
-              width: '100%',
-              height: '20rem',
-            }}
-          >
+          <div style={styles.map}>
             <GoogleMap
               mapContainerClassName="map-container"
-              center={{
-                lat: 23,
-                lng: 25,
-              }}
-              onClick={(e) => {
-                onMapClick(e.latLng?.lat(), e.latLng?.lng());
-              }}
+              center={{ lat: 23, lng: 25 }}
+              onClick={(e) => onMapClick(e.latLng?.lat(), e.latLng?.lng())}
               onLoad={onMapLoad}
               zoom={1}
             >
@@ -144,11 +169,7 @@ const CreatePlace = () => {
                 }}
               >
                 {isOpen && (
-                  <InfoWindow
-                    onCloseClick={() => {
-                      setIsOpen(false);
-                    }}
-                  >
+                  <InfoWindow onCloseClick={() => setIsOpen(false)}>
                     <>
                       <h3>{place.name}</h3>
                       <h6>{place.description}</h6>
@@ -162,6 +183,56 @@ const CreatePlace = () => {
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    display: 'flex',
+  },
+  Buttons: {
+    display: 'flex',
+    gap: '1rem',
+  },
+  leftSide: {
+    flex: 1,
+    padding: '20px',
+  },
+  rightSide: {
+    flex: 1,
+    height: '100vh',
+    overflow: 'hidden',
+  },
+  formContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  formGroup: {
+    display: 'flex',
+  },
+  label: {
+    marginBottom: '0.5rem',
+    fontWeight: 'bold',
+  },
+  createButton: {
+    marginTop: '1rem',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f0f0f0',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#666',
+    fontSize: '18px',
+  },
 };
 
 export default CreatePlace;

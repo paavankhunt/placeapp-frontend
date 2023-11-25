@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import Logout from '../components/Logout';
 import PlaceList from './PlaceList';
 import { getToken } from '../helpers';
 import { useNavigate } from 'react-router-dom';
@@ -15,12 +14,7 @@ const Dashboard = () => {
   useEffect(() => {
     VerifyUser();
   }, [VerifyUser]);
-  return (
-    <div>
-      <Logout />
-      <PlaceList />
-    </div>
-  );
+  return <PlaceList />;
 };
 
 export default Dashboard;

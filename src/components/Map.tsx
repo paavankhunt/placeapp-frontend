@@ -33,6 +33,7 @@ export default function MapView({ places }: { places: Place[] }) {
   const onMapLoad = (map: any) => {
     setMapRef(map);
     const bounds = new google.maps.LatLngBounds();
+    places?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
     map.fitBounds(bounds);
   };
 
@@ -57,14 +58,14 @@ export default function MapView({ places }: { places: Place[] }) {
   };
 
   return (
-    <div>
+    <>
       {!isLoaded ? (
         <button>'Loading...'</button>
       ) : (
         <div
           style={{
             width: '100%',
-            height: '20rem',
+            height: '100%',
           }}
         >
           <GoogleMap
@@ -110,6 +111,6 @@ export default function MapView({ places }: { places: Place[] }) {
           </GoogleMap>
         </div>
       )}
-    </div>
+    </>
   );
 }
