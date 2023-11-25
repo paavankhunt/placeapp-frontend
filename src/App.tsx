@@ -5,7 +5,6 @@ import Dashboard from './modules/Dashboard';
 import Login from './modules/Login';
 import AuthState from './context/authentication';
 import CreatePlace from './modules/CreatePlace';
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 const App: React.FC = () => {
   return (

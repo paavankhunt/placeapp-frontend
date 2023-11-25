@@ -1,53 +1,114 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useGeolocation } from '../helpers/useGeolocation';
+import React, { useEffect, useState } from 'react';
 import { Place } from '../modules/PlaceList';
-import { Map } from 'mapbox-gl';
+import {
+  GoogleMap,
+  InfoWindow,
+  Marker,
+  useLoadScript,
+} from '@react-google-maps/api';
 
 interface Position {
   lat: number;
-  long: number;
+  lng: number;
 }
 
-export const initMap = (
-  container: HTMLDivElement,
-  coords: [number, number]
-) => {
-  return new Map({
-    container,
-    style: 'mapbox://styles/mapbox/dark-v10',
-    pitchWithRotate: false,
-    center: coords,
-    zoom: 15,
-    // accessToken: import.meta.env.VITE_KEY as string,
-    doubleClickZoom: false,
-  });
-};
 export default function MapView({ places }: { places: Place[] }) {
-  const [mapPosition, setMapPosition] = useState<[number, number]>([40, 1]);
-  const mapRef = useRef<HTMLDivElement>(null);
-
-  const {
-    isLoading: isLoadingPosition,
-    position: geolocationPosition,
-    getPosition,
-  } = useGeolocation({
-    lat: mapPosition[0],
-    long: mapPosition[1],
+  const [mapPosition, setMapPosition] = useState<Position>({
+    lat: 40,
+    lng: 1,
   });
+  const [mapRef, setMapRef] = useState<any>();
+  const [isOpen, setIsOpen] = useState(false);
+  const [infoWindowData, setInfoWindowData] = useState<any>();
 
   useEffect(() => {
-    if (geolocationPosition) {
-      setMapPosition([geolocationPosition.lat, geolocationPosition.long]);
+    if (places.length > 0) {
+      setMapPosition({
+        lat: places[0].lat,
+        lng: places[0].lng,
+      });
     }
-  }, [geolocationPosition]);
+  }, [places]);
+
+  const onMapLoad = (map: any) => {
+    setMapRef(map);
+    const bounds = new google.maps.LatLngBounds();
+    map.fitBounds(bounds);
+  };
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY ?? '',
+  });
+
+  const handleMarkerClick = (props: {
+    id: string;
+    lat: number;
+    lng: number;
+    name: string;
+    description: string;
+  }) => {
+    mapRef?.panTo({ lat: props.lat, lng: props.lng });
+    setInfoWindowData({
+      id: props.id,
+      name: props.name,
+      description: props.description,
+    });
+    setIsOpen(true);
+  };
 
   return (
-    <div ref={mapRef} className="map">
-      {!geolocationPosition && (
-        <button onClick={getPosition}>
-          {isLoadingPosition ? 'Loading...' : 'Use your position'}
-        </button>
+    <div>
+      {!isLoaded ? (
+        <button>'Loading...'</button>
+      ) : (
+        <div
+          style={{
+            width: '100%',
+            height: '20rem',
+          }}
+        >
+          <GoogleMap
+            mapContainerClassName="map-container"
+            center={{
+              lat: mapPosition.lat,
+              lng: mapPosition.lng,
+            }}
+            zoom={1}
+            onClick={() => setIsOpen(false)}
+            onLoad={onMapLoad}
+          >
+            {places.map((place) => {
+              return (
+                <Marker
+                  position={{ lat: place.lat, lng: place.lng }}
+                  key={place._id}
+                  onClick={() => {
+                    handleMarkerClick({
+                      id: place._id,
+                      lat: place.lat,
+                      lng: place.lng,
+                      name: place.name,
+                      description: place.description,
+                    });
+                  }}
+                >
+                  {isOpen && infoWindowData?.id === place._id && (
+                    <InfoWindow
+                      onCloseClick={() => {
+                        setIsOpen(false);
+                      }}
+                    >
+                      <>
+                        <h3>{infoWindowData.name}</h3>
+                        <h6>{infoWindowData.description}</h6>
+                      </>
+                    </InfoWindow>
+                  )}
+                </Marker>
+              );
+            })}
+          </GoogleMap>
+        </div>
       )}
     </div>
   );

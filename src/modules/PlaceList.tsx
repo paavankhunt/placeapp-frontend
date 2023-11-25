@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Map from '../components/Map';
 import { getToken } from '../helpers';
 import { Link } from 'react-router-dom';
 import MapView from '../components/Map';
@@ -10,7 +9,7 @@ export interface Place {
   name: string;
   description: string;
   lat: number;
-  long: number;
+  lng: number;
 }
 
 const PlaceList = () => {
@@ -57,7 +56,7 @@ const PlaceList = () => {
                 <tr key={place._id}>
                   <td>{place.name}</td>
                   <td>{place.description}</td>
-                  <td>{`( ${place.lat},${place.long})`}</td>
+                  <td>{`( ${place.lat},${place.lng})`}</td>
                 </tr>
               ))}
           </tbody>

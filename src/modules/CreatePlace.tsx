@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import axios from 'axios';
 import { getToken } from '../helpers';
 import Logout from '../components/Logout';
 import { Link } from 'react-router-dom';
+import {
+  GoogleMap,
+  InfoWindow,
+  Marker,
+  useLoadScript,
+} from '@react-google-maps/api';
 
 const CreatePlace = () => {
   const [place, setPlace] = useState({
     name: '',
     description: '',
-    long: 0,
+    lng: 0,
     lat: 0,
   });
+  const [mapRef, setMapRef] = useState<any>();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY ?? '',
+  });
+
+  const onMapClick = useCallback(
+    async (lat?: number, lng?: number) => {
+      setPlace({ ...place, lat: lat ?? 0, lng: lng ?? 0 });
+    },
+    [place]
+  );
+
+  const onMapLoad = (map: any) => {
+    setMapRef(map);
+  };
 
   const handleCreatePlace = async () => {
     try {
@@ -25,13 +48,19 @@ const CreatePlace = () => {
           data: {
             name: place.name,
             description: place.description,
-            long: place.long,
+            lng: place.lng,
             lat: place.lat,
           },
         }
       );
 
       console.log(response.data);
+      setPlace({
+        name: '',
+        description: '',
+        lng: 0,
+        lat: 0,
+      });
     } catch (error) {
       console.error('Error creating place:', error);
     }
@@ -74,15 +103,63 @@ const CreatePlace = () => {
             <input
               type="text"
               placeholder="Longitude"
-              value={place.long}
+              value={place.lng}
               onChange={(e) =>
-                setPlace({ ...place, long: Number(e.target.value) })
+                setPlace({ ...place, lng: Number(e.target.value) })
               }
             />
           </div>
         </label>
       </div>
-      <button onClick={handleCreatePlace}>Create Place</button>
+      <button onClick={handleCreatePlace} style={{ marginTop: '1rem' }}>
+        Create Place
+      </button>
+      <div>
+        {!isLoaded ? (
+          <button>'Loading...'</button>
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              height: '20rem',
+            }}
+          >
+            <GoogleMap
+              mapContainerClassName="map-container"
+              center={{
+                lat: 23,
+                lng: 25,
+              }}
+              onClick={(e) => {
+                onMapClick(e.latLng?.lat(), e.latLng?.lng());
+              }}
+              onLoad={onMapLoad}
+              zoom={1}
+            >
+              <Marker
+                position={{ lat: place.lat, lng: place.lng }}
+                onClick={() => {
+                  mapRef?.panTo({ lat: place.lat, lng: place.lng });
+                  setIsOpen(true);
+                }}
+              >
+                {isOpen && (
+                  <InfoWindow
+                    onCloseClick={() => {
+                      setIsOpen(false);
+                    }}
+                  >
+                    <>
+                      <h3>{place.name}</h3>
+                      <h6>{place.description}</h6>
+                    </>
+                  </InfoWindow>
+                )}
+              </Marker>
+            </GoogleMap>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
