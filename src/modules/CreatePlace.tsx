@@ -104,26 +104,38 @@ const CreatePlace = () => {
         </div>
         <div>
           <div style={{ ...styles.formContainer, flexDirection: 'column' }}>
-            <div style={styles.formGroup}>
+            <div style={{ ...styles.formGroup, flexDirection: 'column' }}>
               <label style={styles.label}>Name:</label>
               <input
+                style={{
+                  height: '1.5rem',
+                  maxWidth: '20rem',
+                }}
                 type="text"
                 value={place.name}
                 onChange={(e) => setPlace({ ...place, name: e.target.value })}
               />
             </div>
-            <div style={styles.formGroup}>
+            <div style={{ ...styles.formGroup, flexDirection: 'column' }}>
               <label style={styles.label}>Description:</label>
               <textarea
+                style={{
+                  height: '4rem',
+                  maxWidth: '20rem',
+                }}
                 value={place.description}
                 onChange={(e) =>
                   setPlace({ ...place, description: e.target.value })
                 }
               />
             </div>
-            <div style={styles.formGroup}>
+            <div style={{ ...styles.formGroup, flexDirection: 'column' }}>
               <label style={styles.label}>Latitude:</label>
               <input
+                style={{
+                  height: '1.5rem',
+                  maxWidth: '20rem',
+                }}
                 type="text"
                 placeholder="Enter Latitude"
                 value={place.lat}
@@ -132,9 +144,13 @@ const CreatePlace = () => {
                 }
               />
             </div>
-            <div style={styles.formGroup}>
+            <div style={{ ...styles.formGroup, flexDirection: 'column' }}>
               <label style={styles.label}>Longitude:</label>
               <input
+                style={{
+                  height: '1.5rem',
+                  maxWidth: '20rem',
+                }}
                 type="text"
                 placeholder="Enter Longitude"
                 value={place.lng}
