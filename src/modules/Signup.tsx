@@ -40,7 +40,7 @@ const SignUp = () => {
       />
       <button onClick={handleSignUp}>Sign Up</button>
       <div>Already have account then then </div>
-      <Link to={'/login'}>Sign Up</Link>
+      <Link to={'/login'}>Login</Link>
     </div>
   );
 };
