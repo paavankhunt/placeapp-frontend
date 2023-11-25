@@ -167,7 +167,7 @@ const CreatePlace = () => {
                   height: '1.5rem',
                   maxWidth: '20rem',
                 }}
-                type="text"
+                type="number"
                 placeholder="Enter Latitude"
                 value={place.lat}
                 onChange={(e) =>
@@ -182,7 +182,7 @@ const CreatePlace = () => {
                   height: '1.5rem',
                   maxWidth: '20rem',
                 }}
-                type="text"
+                type="number"
                 placeholder="Enter Longitude"
                 value={place.lng}
                 onChange={(e) =>
