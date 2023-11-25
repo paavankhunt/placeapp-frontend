@@ -10,7 +10,7 @@ const Dashboard = () => {
     if (!getToken()) {
       navigate('/login');
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     VerifyUser();
